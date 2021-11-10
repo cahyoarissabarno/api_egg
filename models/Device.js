@@ -2,16 +2,14 @@ const mongoose = require('mongoose')
 
 const DeviceSchema = mongoose.Schema({
     user_id:{
-        type: String,
-        required: true
+        type: String
     },
     device_id:{
         type: Number,
         required: true
     },
     device_name: {
-        type: String,
-        required: true
+        type: String
     },
     status: {
         type: String,

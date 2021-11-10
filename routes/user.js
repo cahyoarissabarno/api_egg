@@ -55,7 +55,7 @@ router.post('/register', async (req,res)=>{
             user_id: saveUser._id,
             status: "active"
         })
-        res.json({saveUser, device_up})
+        res.json({ message: "Register Berhasil" })
     } catch (error) {
         res.status(400).json({
             status: res.statusCode,
@@ -79,6 +79,9 @@ router.post('/login', async(req,res)=>{
         status: res.statusCode,
         message: 'Password anda salah'
     })
+
+    //get device
+    const getDevice = await Device.find({user_id: user._id})
 
     //membuat token jwt
     const token = jwt.sign({_id:user._id}, process.env.SECRET_KEY)

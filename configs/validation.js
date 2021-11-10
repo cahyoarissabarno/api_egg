@@ -6,7 +6,8 @@ const registerValidation = (data)=>{
         username: joi.string().required(),
         email: joi.string().email().required(),
         password: joi.string().min(6).required(),
-        device_id: joi.number().required()
+        device_id: joi.number().required(),
+        // auth_token: joi.string()
     })
 
     return schema.validate(data)
@@ -22,10 +23,10 @@ const loginValidation = (data)=>{
 }
 
 const validateToken = (req, res, next)=>{
-    const token = req.header('auth-token')
+    const token = req.headers.token
     if(!token) return res.status(400).json({
         status: res.statusCode,
-        message: 'Akses Ditolak !'
+        message: 'Maaf Akses Ditolak !'
     })
     try {
         const verified = jwt.verify(token, process.env.SECRET_KEY)
