@@ -13,10 +13,15 @@ app.use(cors())
 //import routes
 const deviceRoutes = require('./routes/device')
 const userRoutes = require('./routes/user')
+const timelineRoutes = require('./routes/timeline')
+const adminRoutes = require('./routes/admin')
+
 
 //routes example
 app.use('/api/device', deviceRoutes)
 app.use('/api/user', userRoutes)
+app.use('/api/timeline', timelineRoutes)
+app.use('/api/admin', adminRoutes)
 
 //connect to db
 mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true })

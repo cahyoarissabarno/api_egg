@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const nodemailer = require('nodemailer')
 
 const User = require('../models/User')
 const Device = require('../models/Device')
@@ -80,14 +81,84 @@ router.post('/login', async(req,res)=>{
         message: 'Password anda salah'
     })
 
-    //get device
-    const getDevice = await Device.find({user_id: user._id})
-
     //membuat token jwt
     const token = jwt.sign({_id:user._id}, process.env.SECRET_KEY)
     res.header('auth-token' ,token).json({
-        token: token
+        token: token,
+        role: user.role
     })
+})
+
+//Reset Password
+router.put('/reset-password', async(req,res)=>{
+    const user = await User.findOne({email: req.body.email})
+    if(!user) return res.status(400).json({
+        status: res.statusCode,
+        message: 'Email anda salah'
+    })
+
+    //membuat token jwt
+    const token = jwt.sign({_id:user._id}, process.env.SECRET_KEY)
+    
+    await user.updateOne({reset_token: token})
+
+    const templateEmail = {
+        from: 'Egg Cracker',
+        to: req.body.email,
+        subject: 'Link Reset Password',
+        html: `<p> Silahkan klik link dibawah untuk reset password anda </p> <p>${process.env.CLIENT_URL}/reset-password/${token}</p>`
+    }
+
+    let transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        requireTLS: true,
+        auth: {
+          user: process.env.MAIL_NAME, // generated ethereal user
+          pass: process.env.MAIL_KEY // generated ethereal password
+        },
+    });
+    
+    try {
+        const sendEmail = await transporter.sendMail(templateEmail)
+        res.json({sendEmail, message:"Silahkan cek email anda"})
+
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({
+            status: res.statusCode,
+            message: 'Reset password gagal'
+        })
+    }
+}),
+
+//Set New Password
+router.put('/reset-password/:token', async(req,res)=>{
+    const user = await User.findOne({reset_token: req.params.token})
+    if(!user) return res.status(400).json({
+        status: res.statusCode,
+        message: 'Token tidak ditemukan'
+    })
+
+    //hash password
+    const salt = await bcrypt.genSalt(10)
+    const hashPassword = await bcrypt.hash(req.body.password, salt)
+    
+    try {
+        await user.updateOne({
+            password: hashPassword,
+            reset_token: ''
+        })
+        res.json({ message: "Reset Password Berhasil" })
+    } catch (error) {
+        res.status(400).json({
+            status: res.statusCode,
+            message: 'Gagal Reset Password'
+        })
+    }
+
+    
 })
 
 module.exports = router
