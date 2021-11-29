@@ -5,6 +5,14 @@ require('dotenv/config')
 
 const app = express()
 
+app.enable('trust proxy');
+app.use(function (req, res, next) {
+	if (req.headers['x-forwarded-proto'] !== 'https'){
+        next();
+    } else {
+    next();
+    }
+})
 //json parser & middleware
 app.use(express.json({extended: true, limit: '50mb'}));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
