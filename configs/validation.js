@@ -5,8 +5,8 @@ const registerValidation = (data)=>{
     const schema = joi.object({
         username: joi.string().required(),
         email: joi.string().email().required(),
-        password: joi.string().min(6).required(),
-        device_id: joi.number()
+        password: joi.string().min(6).required()
+        // device_id: joi.number().required(),
         // auth_token: joi.string()
     })
 

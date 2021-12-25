@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const bcrypt = require('bcrypt')
 // const bcrypt = require('bcryptjs') //only on localhost
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer')
