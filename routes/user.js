@@ -19,19 +19,19 @@ router.post('/register', async (req,res)=>{
     })
 
     //check device id
-    const deviceExist = await Device.findOne({device_id: req.body.device_id})
-    if (!deviceExist) {
-        return res.status(400).json({
-            status: res.statusCode,
-            message: 'Pastikan Device ID Benar, Silahkan Coba Kembali'
-        })
-    }
-    if (deviceExist.status == "active") {
-        return res.status(400).json({
-            status: res.statusCode,
-            message: 'Device ID Telah Digunakan'
-        })
-    }
+    // const deviceExist = await Device.findOne({device_id: req.body.device_id})
+    // if (!deviceExist) {
+    //     return res.status(400).json({
+    //         status: res.statusCode,
+    //         message: 'Pastikan Device ID Benar, Silahkan Coba Kembali'
+    //     })
+    // }
+    // if (deviceExist.status == "active") {
+    //     return res.status(400).json({
+    //         status: res.statusCode,
+    //         message: 'Device ID Telah Digunakan'
+    //     })
+    // }
 
     //check email
     const emailExist = await User.findOne({email: req.body.email})
