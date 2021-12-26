@@ -106,7 +106,7 @@ router.put('/reset-password', async(req,res)=>{
     const templateEmail = {
         from: 'Egg Cracker',
         to: req.body.email,
-        subject: 'Link Reset Password',
+        subject: 'Berikut Link Reset Password Anda. Silahkan klik untuk melanjutkan reset password',
         html: `<p> Silahkan klik link dibawah untuk reset password anda </p> <p>${process.env.CLIENT_URL}/reset-password/${token}</p>`
     }
 
@@ -115,7 +115,8 @@ router.put('/reset-password', async(req,res)=>{
         auth: {
           user: process.env.MAIL_NAME, // generated ethereal user
           pass: process.env.MAIL_KEY // generated ethereal password
-        }
+        },
+        from: 'eggcrackerid@gmail.com'
     });
     
     try {
