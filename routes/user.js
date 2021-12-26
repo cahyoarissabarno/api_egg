@@ -112,6 +112,12 @@ router.put('/reset-password', async(req,res)=>{
             <a href="${process.env.CLIENT_URL}/reset-password/${token}">
                 <button> Lanjutkan Reset Password </button>
             </a>
+            `,
+        text: `
+            <p> Berikut Link Reset Password Anda. Silahkan Klik Untuk Melanjutkan Reset Password </p> 
+            <a href="${process.env.CLIENT_URL}/reset-password/${token}">
+                <button> Lanjutkan Reset Password </button>
+            </a>
             `
     }
 
