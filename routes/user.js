@@ -104,10 +104,10 @@ router.put('/reset-password', async(req,res)=>{
     await user.updateOne({reset_token: token})
 
     const templateEmail = {
-        from: 'Egg Cracker',
+        from: 'Egg Cracker <eggcrackerid@gmail.com>',
         to: req.body.email,
-        subject: 'Berikut Link Reset Password Anda. Silahkan klik untuk melanjutkan reset password',
-        html: `<p> Silahkan klik link dibawah untuk reset password anda </p> <p>${process.env.CLIENT_URL}/reset-password/${token}</p>`
+        subject: 'Reset Password - Egg Cracker',
+        html: `<p> Berikut Link Reset Password Anda. Silahkan Klik Untuk Melanjutkan Reset Password </p> <p>${process.env.CLIENT_URL}/reset-password/${token}</p>`
     }
 
     let transporter = nodemailer.createTransport({
