@@ -107,7 +107,12 @@ router.put('/reset-password', async(req,res)=>{
         from: 'Egg Cracker <eggcrackerid@gmail.com>',
         to: req.body.email,
         subject: 'Reset Password - Egg Cracker',
-        html: `<p> Berikut Link Reset Password Anda. Silahkan Klik Untuk Melanjutkan Reset Password </p> <p>${process.env.CLIENT_URL}/reset-password/${token}</p>`
+        html: `
+            <p> Berikut Link Reset Password Anda. Silahkan Klik Untuk Melanjutkan Reset Password </p> 
+            <a href="${process.env.CLIENT_URL}/reset-password/${token}">
+                <button> Lanjutkan Reset Password </button>
+            </a>
+            `
     }
 
     let transporter = nodemailer.createTransport({
