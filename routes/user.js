@@ -104,7 +104,7 @@ router.put('/reset-password', async(req,res)=>{
     await user.updateOne({reset_token: token})
 
     const templateEmail = {
-        from: 'Egg Cracker <eggcrackerid@gmail.com>',
+        from: process.env.MAIL_NAME,
         to: req.body.email,
         subject: 'Reset Password - Egg Cracker',
         html: `
@@ -130,8 +130,7 @@ router.put('/reset-password', async(req,res)=>{
         auth: {
           user: process.env.MAIL_NAME, // generated ethereal user
           pass: process.env.MAIL_KEY // generated ethereal password
-        },
-        from: 'eggcrackerid@gmail.com'
+        }
     });
     
     try {
