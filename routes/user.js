@@ -112,8 +112,8 @@ router.put('/reset-password', async(req,res)=>{
 
     let transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
-        port: 587,
-        secure: false, // true for 465, false for other ports
+        port: 465, //587 for false
+        secure: true, // true for 465, false for other ports
         requireTLS: true,
         auth: {
           user: process.env.MAIL_NAME, // generated ethereal user
