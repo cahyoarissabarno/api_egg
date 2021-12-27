@@ -179,7 +179,7 @@ router.put('/reset-password', async(req,res)=>{
             //emailOptions - who sends what to whom
             let emailTransporter = await createTransporter();
             await emailTransporter.sendMail(emailOptions);
-            
+
             res.json({sendEmail, message:"Silahkan cek email anda"})
     
         } catch (error) {
@@ -194,7 +194,7 @@ router.put('/reset-password', async(req,res)=>{
     sendEmail({
         subject: "Test",
         text: "I am sending an email from nodemailer!",
-        to: "put_email_of_the_recipient",
+        to: req.body.email,
         from: process.env.EMAIL
     });
 }),
