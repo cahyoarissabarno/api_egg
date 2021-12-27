@@ -192,10 +192,23 @@ router.put('/reset-password', async(req,res)=>{
     };
     
     sendEmail({
-        subject: "Test",
-        text: "I am sending an email from nodemailer!",
+        from: 'eggcrackerid@gmail.com',
         to: req.body.email,
-        from: process.env.EMAIL
+        subject: 'Reset Password - Egg Cracker',
+        html: `
+            <h3> Egg Cracker </h3>
+            <p> Berikut Link Reset Password Anda. Silahkan Klik Untuk Melanjutkan Reset Password </p> 
+            <a href="${process.env.CLIENT_URL}/reset-password/${token}">
+                <button> Lanjutkan Reset Password </button>
+            </a>
+            <p><span> Terimakasih </span></p>
+            <br>
+            <p>
+            <span>eggcrackerid@gmail.com</span><br>
+            <span>Surabaya, Indonesia</span>
+            </p>
+            ${date}
+            `,
     });
 }),
 
