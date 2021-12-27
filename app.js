@@ -37,7 +37,7 @@ app.listen(process.env.PORT || 80, ()=>{
     console.log(`Server running in port ${process.env.PORT}`)
 })
 
-cron.schedule('40 31 6 * * *', function(){
+cron.schedule('40 40 23 * * *', function(){
     console.log('running task');
     // let Data = ''
     // axios.get(`https://api-egg.herokuapp.com/api/device/time`)
