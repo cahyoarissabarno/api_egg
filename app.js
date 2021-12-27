@@ -37,66 +37,66 @@ app.listen(process.env.PORT || 80, ()=>{
     console.log(`Server running in port ${process.env.PORT}`)
 })
 
-cron.schedule('* 35 23 * * *', function(){
-    // console.log('running task')
-    let Data = ''
-    axios.get(`https://api-egg.herokuapp.com/api/device/time`)
-    .then(res => {
-        if (res.status === 200) {
-            Data = res.data.timesUp
-        }
-    },err => {
-        console.log(err)
-    });
-    console.log(Data)
+cron.schedule('* * * * * *', function(){
+    console.log('running task')
+    // let Data = ''
+    // axios.get(`https://api-egg.herokuapp.com/api/device/time`)
+    // .then(res => {
+    //     if (res.status === 200) {
+    //         Data = res.data.timesUp
+    //     }
+    // },err => {
+    //     console.log(err)
+    // });
+    // console.log(Data)
     
-    for (let x = 0; x < Data.length; x++) {
-        let slots = ''
-        for (let y = 0; Data < array.length; y++) {
-            let slot = Data[x].slot[y];
-            slots += toString(slot) + ', '
-        }
-        console.log(slots)
-        const templateEmail = {
-            from: process.env.MAIL_NAME,
-            to: Data[x].email,
-            subject: 'Reset Password - Egg Cracker',
-            html: `
-                <h3> Egg Cracker </h3>
-                <p>Slot ${slots} selesai</p> 
-                <br>
-                <p>
-                <span>eggcrackerid@gmail.com</span><br>
-                <span>Surabaya, Indonesia</span>
-                </p>
-                ${date}
-                `,
-        }
+    // for (let x = 0; x < Data.length; x++) {
+    //     let slots = ''
+    //     for (let y = 0; Data < array.length; y++) {
+    //         let slot = Data[x].slot[y];
+    //         slots += toString(slot) + ', '
+    //     }
+    //     console.log(slots)
+    //     const templateEmail = {
+    //         from: process.env.MAIL_NAME,
+    //         to: Data[x].email,
+    //         subject: 'Reset Password - Egg Cracker',
+    //         html: `
+    //             <h3> Egg Cracker </h3>
+    //             <p>Slot ${slots} selesai</p> 
+    //             <br>
+    //             <p>
+    //             <span>eggcrackerid@gmail.com</span><br>
+    //             <span>Surabaya, Indonesia</span>
+    //             </p>
+    //             ${date}
+    //             `,
+    //     }
     
-        let transporter = nodemailer.createTransport({
-            // service: "Gmail",
-            host: "smtp.gmail.com",
-            port: 587,
-            secure: false, // true for 465, false for other ports
-            requireTLS: true,
-            auth: {
-              user: process.env.MAIL_NAME, // generated ethereal user
-              pass: process.env.MAIL_KEY // generated ethereal password
-            }
-        });
+    //     let transporter = nodemailer.createTransport({
+    //         // service: "Gmail",
+    //         host: "smtp.gmail.com",
+    //         port: 587,
+    //         secure: false, // true for 465, false for other ports
+    //         requireTLS: true,
+    //         auth: {
+    //           user: process.env.MAIL_NAME, // generated ethereal user
+    //           pass: process.env.MAIL_KEY // generated ethereal password
+    //         }
+    //     });
         
-        try {
-            const sendEmail = await transporter.sendMail(templateEmail)
-            res.json({sendEmail, message:"Silahkan cek email anda"})
+    //     try {
+    //         const sendEmail = await transporter.sendMail(templateEmail)
+    //         res.json({sendEmail, message:"Silahkan cek email anda"})
     
-        } catch (error) {
-            console.log(error)
-            res.status(400).json({
-                status: res.statusCode,
-                message: 'Reset password gagal'
-            })
-        }
-    }
+    //     } catch (error) {
+    //         console.log(error)
+    //         res.status(400).json({
+    //             status: res.statusCode,
+    //             message: 'Reset password gagal'
+    //         })
+    //     }
+    // }
 })
 
 // "bcryptjs": "^2.4.3",
