@@ -108,17 +108,17 @@ router.put('/reset-password', async(req,res)=>{
         to: req.body.email,
         subject: 'Reset Password - Egg Cracker',
         html: `
-            <h5> Egg Cracker </h5>
-            <br>
+            <h3> Egg Cracker </h3>
             <p> Berikut Link Reset Password Anda. Silahkan Klik Untuk Melanjutkan Reset Password </p> 
             <a href="${process.env.CLIENT_URL}/reset-password/${token}">
                 <button> Lanjutkan Reset Password </button>
             </a>
+            <p><span> Terimakasih </span></p>
             <br>
-            <span> Terimakasih </span>
-            <br>
-            <span>eggcrackerid@gmail.com</span>
+            <p>
+            <span>eggcrackerid@gmail.com</span><br>
             <span>Surabaya, Indonesia</span>
+            </p>
             `,
     }
 
