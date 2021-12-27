@@ -141,4 +141,37 @@ router.put('/motor', validateToken, async(req, res)=>{
     }
 })
 
+//check limit timeline
+router.get('/time', async(req,res)=>{
+    const getDevice = await Device.find({status: "active"})
+    let timesUp =[]
+    let getSlot = []
+    for (let x = 0; x < getDevice.length; x++) {
+        let device = getDevice[x];
+        for (let y = 0; y < device.slot.length; y++) {
+            let devSlot = device.slot[y]
+            if (devSlot.started_at != "--") {
+                let dateTokens = devSlot.started_at.split("-")
+                let milDate = new Date(dateTokens[0], dateTokens[1]-1, dateTokens[2]).getTime()
+                let time = Math.abs(new Date().getTime() - milDate)
+                let result = Math.ceil(time / (1000*60*60*24))
+                if (result>=25) {
+                    getSlot.push(devSlot.slot_no)
+                }
+            }
+        }
+        if (getSlot.length > 0) {
+            const getUser = await User.findOne({_id: device.user_id})
+            timesUp.push({
+                user_id: device.user_id,
+                email: getUser.email,
+                device_id: device.device_id,
+                slot: getSlot
+            })
+        }
+        getSlot = []
+    }
+    return res.json({timesUp})
+})
+
 module.exports = router
