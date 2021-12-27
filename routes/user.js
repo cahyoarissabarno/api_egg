@@ -5,6 +5,9 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer')
 
+const { google } = require('googleapis');
+const OAuth2 = google.auth.OAuth2;
+
 const User = require('../models/User')
 const Device = require('../models/Device')
 const { registerValidation } = require('../configs/validation')
@@ -123,20 +126,66 @@ router.put('/reset-password', async(req,res)=>{
             `,
     }
 
-    let transporter = nodemailer.createTransport({
-        // service: "Gmail",
-        host: "smtp.elasticemail.com", //smtp.gmail.com
-        port: 2525, //587
-        // secure: false, // true for 465, false for other ports
-        // requireTLS: true,
+    const createTransporter = async () => {
+        const oauth2Client = new OAuth2(
+          process.env.CLIENT_ID,
+          process.env.CLIENT_SECRET,
+          "https://developers.google.com/oauthplayground"
+        );
+      
+        oauth2Client.setCredentials({
+          refresh_token: process.env.REFRESH_TOKEN
+        });
+    };
+
+    const accessToken = await new Promise((resolve, reject) => {
+        oauth2Client.getAccessToken((err, token) => {
+          if (err) {
+            reject("Failed to create access token :(");
+          }
+          resolve(token);
+        });
+    });
+
+    // let transporter = nodemailer.createTransport({
+    //     // service: "Gmail",
+    //     host: "smtp.gmail.com",
+    //     port: 587,
+    //     secure: false, // true for 465, false for other ports
+    //     requireTLS: true,
+    //     auth: {
+    //       user: process.env.MAIL_NAME, // generated ethereal user
+    //       pass: process.env.MAIL_KEY // generated ethereal password
+    //     }
+    // });
+
+    const transporter = nodemailer.createTransport({
+        service: "gmail",
         auth: {
-          user: process.env.MAIL_NAME, // generated ethereal user
-          pass: process.env.MAIL_KEY // generated ethereal password
+          type: "OAuth2",
+          user: process.env.EMAIL,
+          accessToken,
+          clientId: process.env.CLIENT_ID,
+          clientSecret: process.env.CLIENT_SECRET,
+          refreshToken: process.env.REFRESH_TOKEN
         }
     });
-    
+
     try {
-        const sendEmail = await transporter.sendMail(templateEmail)
+        // const sendEmail = await transporter.sendMail(templateEmail)
+        //emailOptions - who sends what to whom
+        const sendEmail = async (emailOptions) => {
+            let emailTransporter = await createTransporter();
+            await emailTransporter.sendMail(emailOptions);
+        };
+        
+        sendEmail({
+            subject: "Test",
+            text: "I am sending an email from nodemailer!",
+            to: "put_email_of_the_recipient",
+            from: process.env.EMAIL
+        });
+        
         res.json({sendEmail, message:"Silahkan cek email anda"})
 
     } catch (error) {
