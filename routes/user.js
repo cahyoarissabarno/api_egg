@@ -102,7 +102,7 @@ router.put('/reset-password', async(req,res)=>{
     const token = jwt.sign({_id:user._id}, process.env.SECRET_KEY)
     
     await user.updateOne({reset_token: token})
-
+    let date = new Date();
     const templateEmail = {
         from: process.env.MAIL_NAME,
         to: req.body.email,
@@ -119,6 +119,7 @@ router.put('/reset-password', async(req,res)=>{
             <span>eggcrackerid@gmail.com</span><br>
             <span>Surabaya, Indonesia</span>
             </p>
+            ${date}
             `,
     }
 
