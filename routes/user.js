@@ -137,64 +137,66 @@ router.put('/reset-password', async(req,res)=>{
     //       pass: process.env.MAIL_KEY // generated ethereal password
     //     }
     // });
-    try {
-        const createTransporter = async () => {
-            const oauth2Client = new OAuth2(
-            process.env.CLIENT_ID,
-            process.env.CLIENT_SECRET,
-            "https://developers.google.com/oauthplayground"
-            );
-        
-            oauth2Client.setCredentials({
-            refresh_token: process.env.REFRESH_TOKEN
-            });
-        
-            const accessToken = await new Promise((resolve, reject) => {
-            oauth2Client.getAccessToken((err, token) => {
-                if (err) {
-                reject();
-                }
-                resolve(token);
-            });
-            });
-        
-            const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                type: "OAuth2",
-                user: process.env.EMAIL,
-                accessToken,
-                clientId: process.env.CLIENT_ID,
-                clientSecret: process.env.CLIENT_SECRET,
-                refreshToken: process.env.REFRESH_TOKEN
+
+    const createTransporter = async () => {
+        const oauth2Client = new OAuth2(
+          process.env.CLIENT_ID,
+          process.env.CLIENT_SECRET,
+          "https://developers.google.com/oauthplayground"
+        );
+      
+        oauth2Client.setCredentials({
+          refresh_token: process.env.REFRESH_TOKEN
+        });
+      
+        const accessToken = await new Promise((resolve, reject) => {
+          oauth2Client.getAccessToken((err, token) => {
+            if (err) {
+              reject();
             }
-            });
-        
-            return transporter;
-        }
-        // const sendEmail = await transporter.sendMail(templateEmail)
-        //emailOptions - who sends what to whom
-        const sendEmail = async (emailOptions) => {
+            resolve(token);
+          });
+        });
+      
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            type: "OAuth2",
+            user: process.env.EMAIL,
+            accessToken,
+            clientId: process.env.CLIENT_ID,
+            clientSecret: process.env.CLIENT_SECRET,
+            refreshToken: process.env.REFRESH_TOKEN
+          }
+        });
+      
+        return transporter;
+    }
+
+    const sendEmail = async (emailOptions) => {
+        try {
+            // const sendEmail = await transporter.sendMail(templateEmail)
+            //emailOptions - who sends what to whom
             let emailTransporter = await createTransporter();
             await emailTransporter.sendMail(emailOptions);
-        };
-        
-        sendEmail({
-            subject: "Test",
-            text: "I am sending an email from nodemailer!",
-            to: "put_email_of_the_recipient",
-            from: process.env.EMAIL
-        });
-
-        res.json({sendEmail, message:"Silahkan cek email anda"})
-
-    } catch (error) {
-        console.log(error)
-        res.status(400).json({
-            status: res.statusCode,
-            message: 'Reset password gagal'
-        })
-    }
+            
+            res.json({sendEmail, message:"Silahkan cek email anda"})
+    
+        } catch (error) {
+            console.log(error)
+            res.status(400).json({
+                status: res.statusCode,
+                message: 'Reset password gagal'
+            })
+        }
+    };
+    
+    sendEmail({
+        subject: "Test",
+        text: "I am sending an email from nodemailer!",
+        to: "put_email_of_the_recipient",
+        from: process.env.EMAIL
+    });
 }),
 
 //Set New Password
