@@ -106,25 +106,25 @@ router.put('/reset-password', async(req,res)=>{
     
     await user.updateOne({reset_token: token})
     let date = new Date();
-    const templateEmail = {
-        from: process.env.MAIL_NAME,
-        to: req.body.email,
-        subject: 'Reset Password - Egg Cracker',
-        html: `
-            <h3> Egg Cracker </h3>
-            <p> Berikut Link Reset Password Anda. Silahkan Klik Untuk Melanjutkan Reset Password </p> 
-            <a href="${process.env.CLIENT_URL}/reset-password/${token}">
-                <button> Lanjutkan Reset Password </button>
-            </a>
-            <p><span> Terimakasih </span></p>
-            <br>
-            <p>
-            <span>eggcrackerid@gmail.com</span><br>
-            <span>Surabaya, Indonesia</span>
-            </p>
-            ${date}
-            `,
-    }
+    // const templateEmail = {
+    //     from: process.env.MAIL_NAME,
+    //     to: req.body.email,
+    //     subject: 'Reset Password - Egg Cracker',
+    //     html: `
+    //         <h3> Egg Cracker </h3>
+    //         <p> Berikut Link Reset Password Anda. Silahkan Klik Untuk Melanjutkan Reset Password </p> 
+    //         <a href="${process.env.CLIENT_URL}/reset-password/${token}">
+    //             <button> Lanjutkan Reset Password </button>
+    //         </a>
+    //         <p><span> Terimakasih </span></p>
+    //         <br>
+    //         <p>
+    //         <span>eggcrackerid@gmail.com</span><br>
+    //         <span>Surabaya, Indonesia</span>
+    //         </p>
+    //         ${date}
+    //         `,
+    // }
 
     // let transporter = nodemailer.createTransport({
     //     // service: "Gmail",
@@ -183,7 +183,7 @@ router.put('/reset-password', async(req,res)=>{
             let emailTransporter = await createTransporter();
             await emailTransporter.sendMail(emailOptions);
 
-            res.json({sendEmail, message:"Silahkan cek email anda"})
+            res.json({message:"Silahkan cek email anda"})
     
         } catch (error) {
             console.log(error)
