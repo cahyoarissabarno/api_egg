@@ -126,27 +126,6 @@ router.put('/reset-password', async(req,res)=>{
             `,
     }
 
-    const createTransporter = async () => {
-        const oauth2Client = new OAuth2(
-          process.env.CLIENT_ID,
-          process.env.CLIENT_SECRET,
-          "https://developers.google.com/oauthplayground"
-        );
-      
-        oauth2Client.setCredentials({
-          refresh_token: process.env.REFRESH_TOKEN
-        });
-    };
-
-    const accessToken = await new Promise((resolve, reject) => {
-        oauth2Client.getAccessToken((err, token) => {
-          if (err) {
-            reject("Failed to create access token :(");
-          }
-          resolve(token);
-        });
-    });
-
     // let transporter = nodemailer.createTransport({
     //     // service: "Gmail",
     //     host: "smtp.gmail.com",
@@ -159,17 +138,40 @@ router.put('/reset-password', async(req,res)=>{
     //     }
     // });
 
-    const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          type: "OAuth2",
-          user: process.env.EMAIL,
-          accessToken,
-          clientId: process.env.CLIENT_ID,
-          clientSecret: process.env.CLIENT_SECRET,
-          refreshToken: process.env.REFRESH_TOKEN
-        }
-    });
+    const createTransporter = async () => {
+        const oauth2Client = new OAuth2(
+          process.env.CLIENT_ID,
+          process.env.CLIENT_SECRET,
+          "https://developers.google.com/oauthplayground"
+        );
+      
+        oauth2Client.setCredentials({
+          refresh_token: process.env.REFRESH_TOKEN
+        });
+      
+        const accessToken = await new Promise((resolve, reject) => {
+          oauth2Client.getAccessToken((err, token) => {
+            if (err) {
+              reject();
+            }
+            resolve(token);
+          });
+        });
+      
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            type: "OAuth2",
+            user: process.env.EMAIL,
+            accessToken,
+            clientId: process.env.CLIENT_ID,
+            clientSecret: process.env.CLIENT_SECRET,
+            refreshToken: process.env.REFRESH_TOKEN
+          }
+        });
+      
+        return transporter;
+    }
 
     try {
         // const sendEmail = await transporter.sendMail(templateEmail)
@@ -185,7 +187,7 @@ router.put('/reset-password', async(req,res)=>{
             to: "put_email_of_the_recipient",
             from: process.env.EMAIL
         });
-        
+
         res.json({sendEmail, message:"Silahkan cek email anda"})
 
     } catch (error) {
