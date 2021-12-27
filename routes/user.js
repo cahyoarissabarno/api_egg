@@ -5,9 +5,6 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer')
 
-const { google } = require('googleapis');
-const OAuth2 = google.auth.OAuth2;
-
 const User = require('../models/User')
 const Device = require('../models/Device')
 const { registerValidation } = require('../configs/validation')
@@ -106,96 +103,8 @@ router.put('/reset-password', async(req,res)=>{
     
     await user.updateOne({reset_token: token})
     let date = new Date();
-    // const templateEmail = {
-    //     from: process.env.MAIL_NAME,
-    //     to: req.body.email,
-    //     subject: 'Reset Password - Egg Cracker',
-    //     html: `
-    //         <h3> Egg Cracker </h3>
-    //         <p> Berikut Link Reset Password Anda. Silahkan Klik Untuk Melanjutkan Reset Password </p> 
-    //         <a href="${process.env.CLIENT_URL}/reset-password/${token}">
-    //             <button> Lanjutkan Reset Password </button>
-    //         </a>
-    //         <p><span> Terimakasih </span></p>
-    //         <br>
-    //         <p>
-    //         <span>eggcrackerid@gmail.com</span><br>
-    //         <span>Surabaya, Indonesia</span>
-    //         </p>
-    //         ${date}
-    //         `,
-    // }
-
-    // let transporter = nodemailer.createTransport({
-    //     // service: "Gmail",
-    //     host: "smtp.gmail.com",
-    //     port: 587,
-    //     secure: false, // true for 465, false for other ports
-    //     requireTLS: true,
-    //     auth: {
-    //       user: process.env.MAIL_NAME, // generated ethereal user
-    //       pass: process.env.MAIL_KEY // generated ethereal password
-    //     }
-    // });
-
-    const createTransporter = async () => {
-        const oauth2Client = new OAuth2(
-          process.env.CLIENT_ID,
-          process.env.CLIENT_SECRET,
-          "https://developers.google.com/oauthplayground"
-        );
-      
-        oauth2Client.setCredentials({
-          refresh_token: process.env.REFRESH_TOKEN
-        });
-      
-        const accessToken = await new Promise((resolve, reject) => {
-          oauth2Client.getAccessToken((err, token) => {
-            if (err) {
-              reject();
-            }
-            resolve(token);
-          });
-        });
-      
-        const transporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-            type: "OAuth2",
-            user: process.env.EMAIL,
-            accessToken,
-            clientId: process.env.CLIENT_ID,
-            clientSecret: process.env.CLIENT_SECRET,
-            refreshToken: process.env.REFRESH_TOKEN
-          },
-          tls: {
-            rejectUnauthorized: false
-          }
-        });
-      
-        return transporter;
-    }
-
-    const sendEmail = async (emailOptions) => {
-        try {
-            // const sendEmail = await transporter.sendMail(templateEmail)
-            //emailOptions - who sends what to whom
-            let emailTransporter = await createTransporter();
-            await emailTransporter.sendMail(emailOptions);
-
-            res.json({message:"Silahkan cek email anda"})
-    
-        } catch (error) {
-            console.log(error)
-            res.status(400).json({
-                status: res.statusCode,
-                message: 'Reset password gagal'
-            })
-        }
-    };
-    
-    sendEmail({
-        from: 'eggcrackerid@gmail.com',
+    const templateEmail = {
+        from: process.env.MAIL_NAME,
         to: req.body.email,
         subject: 'Reset Password - Egg Cracker',
         html: `
@@ -212,7 +121,31 @@ router.put('/reset-password', async(req,res)=>{
             </p>
             ${date}
             `,
+    }
+
+    let transporter = nodemailer.createTransport({
+        // service: "Gmail",
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        requireTLS: true,
+        auth: {
+          user: process.env.MAIL_NAME, // generated ethereal user
+          pass: process.env.MAIL_KEY // generated ethereal password
+        }
     });
+    
+    try {
+        const sendEmail = await transporter.sendMail(templateEmail)
+        res.json({sendEmail, message:"Silahkan cek email anda"})
+
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({
+            status: res.statusCode,
+            message: 'Reset password gagal'
+        })
+    }
 }),
 
 //Set New Password
